@@ -1,0 +1,8 @@
+prefect==3.6.25
+chromadb==1.5.5
+llama-index==0.14.20
+llama-index-vector-stores-chroma==0.5.5
+llama-index-embeddings-openai==0.6.0
+llama-index-llms-openai==0.7.5
+ollama==0.6.1
+rich==14.3.3

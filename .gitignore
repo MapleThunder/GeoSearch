@@ -1,0 +1,30 @@
+# Virtual environment
+venv/
+.venv/
+
+# ChromaDB local index — don't commit the vector store
+storage/*
+
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Pytest
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
