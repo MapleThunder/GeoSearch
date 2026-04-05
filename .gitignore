@@ -5,6 +5,10 @@ venv/
 # ChromaDB local index — don't commit the vector store
 storage/*
 
+# Only keep some data files for quick startup
+data/*
+!data/test
+
 # Environment variables
 .env
 
