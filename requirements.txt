@@ -4,5 +4,8 @@ llama-index==0.14.20
 llama-index-vector-stores-chroma==0.5.5
 llama-index-embeddings-openai==0.6.0
 llama-index-llms-openai==0.7.5
+llama-index-llms-ollama
+llama-index-embeddings-ollama
 ollama==0.6.1
 rich==14.3.3
+requests
