@@ -1,4 +1,4 @@
-# GeoSearch
+# Strata
 
 > A terminal-first RAG pipeline that ingests a directory of geological PDF documents, builds a local vector index via ChromaDB and LlamaIndex, and lets you query them in natural language from the CLI — orchestrated end to end with Prefect.
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-GeoSearch is a local-first document intelligence tool built for querying large collections of unstructured geological reports and scientific documents using natural language. Point it at a directory of PDFs, run the ingest pipeline, and ask questions directly from your terminal — no cloud required.
+Strata is a local-first document intelligence tool built for querying large collections of unstructured geological reports and scientific documents using natural language. Point it at a directory of PDFs, run the ingest pipeline, and ask questions directly from your terminal — no cloud required.
 
 Built as a portfolio project to explore RAG pipeline architecture, vector search, and terminal-first UX design.
 
@@ -47,8 +47,8 @@ Built as a portfolio project to explore RAG pipeline architecture, vector search
 
 ```bash
 # Clone the repository
-git clone git@github.com:MapleThunder/GeoSearch.git
-cd GeoSearch
+git clone git@github.com:MapleThunder/Strata.git
+cd Strata
 
 # Create and activate a virtual environment
 python -m venv venv
@@ -65,7 +65,7 @@ ollama pull nomic-embed-text
 ### Project Structure
 
 ```
-GeoSearch/
+Strata/
 ├── data/                    # Drop your PDF documents here
 ├── storage/                 # ChromaDB persists its index here
 ├── pipelines/
