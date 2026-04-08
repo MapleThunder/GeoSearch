@@ -32,7 +32,7 @@ def handle_search(args) -> str:
     table.add_column("Distance", justify="right", header_style="pink1", style="deep_sky_blue2")
     table.add_column("Snippet", header_style="pink1")
 
-    for source in sources:
+    for source in response["sources"]:
         table.add_row(
             source["file_name"],
             str(round(source["distance"], 4)),
