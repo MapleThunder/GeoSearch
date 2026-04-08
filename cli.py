@@ -1,15 +1,11 @@
 # --- Imports ---
 import argparse
 from pipelines.ingest import ingest_pipeline
+from search.query import query_documents
 
 def handle_search(args) -> str:
-    print("Starting search...")
-    # 'args' is the parsed result from argparse
-    # args.query will hold the string the user typed after 'search'
-    
-    # Step 1: call your query function with args.query
+    response = query_documents(query_text=args.query)
     # Step 2: format and display results using rich
-    pass
 
 def handle_ingest(args):
     print("Starting Prefect ingest flow...")
