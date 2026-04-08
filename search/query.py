@@ -1,8 +1,8 @@
 import chromadb
-from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext, Settings
-from llama_index.vector_stores.chroma import ChromaVectorStore
+from llama_index.core import Settings
 from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.ollama import OllamaEmbedding
+from typing import TypedDict
 
 Settings.embed_model = OllamaEmbedding(
     model_name="nomic-embed-text",
@@ -13,7 +13,13 @@ Settings.llm = Ollama(
     request_timeout=360.0
 )
 
-def query_documents(query_text: str) -> list[dict]:
+class QueryResult(TypedDict):
+    answer: str
+    sources: list[dict]
+
+def query_documents(query_text: str) -> QueryResult:
+    """Embed a query string, retrieve the top 5 similar documents from ChromaDB, build a grounded RAG prompt, and return the LLM's answer alongside a list of source metadata dicts."""
+
     client = chromadb.PersistentClient(path="./storage")
     collection = client.get_or_create_collection(name="geodocs")
     # Run a similarity search against the collection
@@ -23,10 +29,12 @@ def query_documents(query_text: str) -> list[dict]:
         n_results=5
     )
 
-    # Build the RAG prompt, I will need:
-    # Instructions: Directions for the llm on what role to take and what to do
-    # Retrieved Context: The gathered context from chromadb
-    # Question: The user question
+    """
+        Build the RAG prompt, I will need:
+        Instructions: Directions for the llm on what role to take and what to do
+        Retrieved Context: The gathered context from chromadb
+        Question: The user question
+    """
     context = build_context(results) 
     prompt = f"""
         You are an expert geoscience analyst helping researchers find information across geological survey documents.
@@ -49,21 +57,23 @@ def query_documents(query_text: str) -> list[dict]:
         Question:
         {query_text}
     """
-    # Step 3: Take the retrieved chunks and pass them + the original query to the LLM
-    # This is the "augmented generation" part of RAG
 
     response = Settings.llm.complete(prompt)
-    print(response)
-    
-    # Step 4: Return something structured enough for handle_search to display
-    # Think about what handle_search will need: filename, snippet, relevance score
+    sources = build_sources(results)
+
+    return {
+        "answer": response.text,
+        "sources": sources
+    }
 
 def build_context(context) -> str:
+    """Format ChromaDB query results into a plaintext context block, with each entry showing its source filename and document content separated by dividers."""
+
     constructed_context = ""
     documents = context["documents"][0]
-    metadatas = context["metadatas"][0]
+    metadata_arr = context["metadatas"][0]
 
-    for document, metadata in zip(documents, metadatas):
+    for document, metadata in zip(documents, metadata_arr):
         constructed_context += f"""
             Source: {metadata["file_name"]}
             Content: {document}
@@ -73,12 +83,14 @@ def build_context(context) -> str:
     return constructed_context
 
 def build_sources(context) -> list:
+    """Extract and return a list of source dicts from ChromaDB query results, each containing the filename, similarity distance, and a 250-character content snippet."""
+
     sources = []
     documents = context["documents"][0]
-    metadatas = context["metadatas"][0]
+    metadata_arr = context["metadatas"][0]
     distances = context["distances"][0]
 
-    for document, metadata, distance in zip(documents, metadatas, distances):
+    for document, metadata, distance in zip(documents, metadata_arr, distances):
         sources.append({
             "file_name": metadata["file_name"],
             "distance": distance,
