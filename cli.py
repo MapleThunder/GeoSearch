@@ -2,19 +2,52 @@
 import argparse
 from pipelines.ingest import ingest_pipeline
 from search.query import query_documents
+from rich import print, box
+from rich.panel import Panel
+from rich.table import Table
+from rich.text import Text
+from rich.markdown import Markdown
+from operator import itemgetter
 
 def handle_search(args) -> str:
     response = query_documents(query_text=args.query)
-    # Step 2: format and display results using rich
+    # Query
+    label = Text.assemble(
+        ("Query: ", "bold pink1"),
+        (args.query, "yellow"),
+        justify="center"
+    )
+    print(label)
+
+    # Answer panel
+    panel = Panel(
+        Markdown(response["answer"]),
+        title="GeoSearch Response",
+        border_style="green",
+    )
+    print(panel)
+
+    # Source table
+    table = Table(title="Sources", show_lines=True, box=box.ROUNDED)
+    table.add_column("File", style="cyan", header_style="pink1")
+    table.add_column("Distance", justify="right", header_style="pink1", style="deep_sky_blue2")
+    table.add_column("Snippet", header_style="pink1")
+
+    for source in sources:
+        table.add_row(
+            source["file_name"],
+            str(round(source["distance"], 4)),
+            source["snippet"]
+        )
+
+    print(table)
 
 def handle_ingest(args):
     print("Starting Prefect ingest flow...")
-    # ingest_pipeline(args.data_dir)
+    ingest_pipeline(args.data_dir)
     print("Finished Prefect ingest flow !")
 
 def main():
-    # print("Initializing parsers...")
-
     parser = argparse.ArgumentParser(
         prog='GeoSearch',
         description='GeoSearch allows ingestion and RAG query of PDF documents locally on device',
@@ -47,10 +80,6 @@ def main():
     )
     parser_search.set_defaults(func=handle_search)
     
-    # print("Parsers initialized !")
-    # print("Reading args...")
-    
-    # I know I need to pass the content from the script call into parse_args but am not sure how yet
     args = parser.parse_args()
     args.func(args)
 
