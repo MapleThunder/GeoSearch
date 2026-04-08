@@ -7,7 +7,6 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from rich.markdown import Markdown
-from operator import itemgetter
 
 def handle_search(args) -> str:
     response = query_documents(query_text=args.query)
